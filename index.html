@@ -88,7 +88,7 @@ a { color: inherit; }
   min-height: 100svh;
   display: flex; flex-direction: column;
   justify-content: center; align-items: flex-start;
-  padding: 6rem 6vw 4rem;
+  padding: 3.2rem 6vw 4rem;
   position: relative;
   border-bottom: var(--border);
 }
@@ -110,7 +110,7 @@ a { color: inherit; }
 .hero-sub b { color: var(--pop); }
 .hero-cta { display: flex; gap: 1rem; margin-top: 1.4rem; flex-wrap: wrap; }
 .hero-hint {
-  margin-top: 1.4rem;
+  margin-top: 2.6rem;
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.8rem; opacity: 0.55;
 }
@@ -411,7 +411,8 @@ a { color: inherit; }
 .photo-strip:hover .photo-track { animation-play-state: paused; }
 .photo-frame {
   margin: 0; flex: 0 0 auto;
-  width: 300px; height: 360px;
+  width: 380px; height: 285px; /* 4:3 */
+  aspect-ratio: 4 / 3;
   border: var(--border);
   background: #161616;
   box-shadow: 8px 8px 0 rgba(0, 229, 255, 0.45);
@@ -617,7 +618,7 @@ body::before {
   .work, .memes, .photos-sec, .footer { padding-left: 5vw; padding-right: 5vw; }
   .photos-sec { padding-left: 0; padding-right: 0; }
   .grid { grid-template-columns: 1fr; }
-  .photo-frame { width: 230px; height: 280px; }
+  .photo-frame { width: 260px; height: 195px; }
   .score-chip { font-size: 0.6rem; }
   .score-chip b { font-size: 1.2rem; }
   .hero-hint { font-size: 0.7rem; }

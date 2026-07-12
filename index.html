@@ -727,8 +727,8 @@ body::before {
 @media (prefers-reduced-motion: reduce) { .hero-name .kinetic-word:nth-child(2) { animation: none !important; } }
 
 /* ---------- game pause button ---------- */
-.game-pause {
-  position: fixed; bottom: 112px; right: 18px; left: auto; z-index: 60;
+.hero > .game-pause, .game-pause {
+  position: fixed !important; bottom: 112px; right: 18px; left: auto; top: auto; z-index: 60;
   font-family: 'Share Tech Mono', monospace; font-weight: 700; font-size: 0.8rem;
   background: var(--pop); color: #000;
   border: var(--border);

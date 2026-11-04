@@ -30,6 +30,7 @@ export const LIVERIES = [
   { name: 'SIGNAL', body: '#fcee0a', stripe: '#0d0d0d', trim: '#0d0d0d' },
   { name: 'MIDNIGHT', body: '#1b1830', stripe: '#00f0ff', trim: '#ff2bd6' },
   { name: 'ROSSO', body: '#c8102e', stripe: '#f5f2ea', trim: '#111111' },
+  { name: 'AKAI', body: '#e0141e', stripe: '#ffe7c2', trim: '#1a0d0f' },
   { name: 'GHOST', body: '#8e95a8', stripe: '#b8ff2e', trim: '#1b1b22' },
   { name: 'ORCHID', body: '#ff2bd6', stripe: '#16121f', trim: '#00f0ff' },
 ];

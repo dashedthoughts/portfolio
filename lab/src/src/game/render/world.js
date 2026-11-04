@@ -638,7 +638,15 @@ export function createWorld(renderer, initialCfg) {
     pg.position.set(S.x, 0, 0);
     const pitch = -Math.min(0.03, Math.max(-0.03, (S.speed - (P.lastSpeed || 0)) * 0.01));
     if (P.bike) {
-      pg.rotation.set(pitch, -S.vx * 0.02, -S.steer * 0.42 - S.vx * 0.035);
+      const sliding = sim.input.brake && S.speed > 22 && sim.mode === 'play';
+      const dir = S.steer < -0.05 ? 1 : -1;
+      P.slide = (P.slide || 0) + ((sliding ? dir * 0.95 : 0) - (P.slide || 0)) * Math.min(1, dt * (sliding ? 5 : 3));
+      if (Math.abs(P.slide) > 0.3) {
+        const side = Math.sign(P.slide);
+        emit(4, { x: S.x + side * 0.9, y: 0.05, z: 1.0 }, { color: '#b8ff8a', gain: 7, speed: 4, life: 0.4, size: 0.07, gravity: 10, vz: 9, vx: side * 3 });
+        emit(1, { x: S.x + side * 0.6, y: 0.1, z: 1.2 }, { color: '#fff4d0', gain: 4, speed: 2, life: 0.25, size: 0.05, vz: 7 });
+      }
+      pg.rotation.set(pitch, -S.vx * 0.02 + P.slide, -S.steer * 0.42 - S.vx * 0.035 - P.slide * 0.55);
       glowPlane.rotation.z = -pg.rotation.z; // keep the pool flat on the road while the bike leans
     }
     else pg.rotation.set(pitch, -S.vx * 0.032 - S.steer * 0.04, S.vx * 0.012);

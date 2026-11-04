@@ -1,25 +1,25 @@
-# /lab: Night City v2 (design-iteration copy)
+# home: Anuraag Dash, the night build
+
+Live: https://dashedthoughts.github.io/home/ · The classic site stays at https://dashedthoughts.github.io/portfolio/
 
 | Path | What |
 |---|---|
-| `lab/index.html` | built site (single file, CSS + JS inlined, same deploy model as the root) |
-| `lab/baseline/` | frozen copy of the live v8 site, for side-by-side comparison |
-| `lab/src/` | **readable source** (React 18 + Three.js), build tooling, tests |
-| `lab/DESIGN.md` | point of view, principles, tokens, what's next |
+| `index.html` | the built site: one file, CSS + JS inlined |
+| `cases/` | case-study media: decks rendered to page images (800/1600 px), original PDFs, demo video |
+| `resume.pdf` | résumé |
+| `src/` | readable source (React 18 + Three.js), build, tests |
+| `DESIGN.md` | point of view, principles, tokens |
 
-Routes: `#/` home · `#/p/<slug>` case file · `#/play` REDLINE · `#/system` living design system.
+Routes: `#/` home · `#/p/<slug>` case study · `#/play` REDLINE · `#/system` design system.
 
-## Build
 ```bash
-cd lab/src && npm install && npm run build   # writes lab/index.html
-npm test                                     # headless simulation checks (traffic fairness, difficulty, rain, cars)
+cd src && npm install && npm run build   # writes ../index.html
+npm test                                 # simulation checks: fairness over 5 seeds, routes, finale, cars, rain
 ```
 
-## REDLINE architecture (`lab/src/src/game/`)
-- `sim.js`: pure simulation in track space (metres). Handling with grip and inertia, guardrail scraping, traffic with signalled lane changes and gap-keeping (never builds a three-lane wall), near-miss, slipstream, heat/glitch, shards → case files. No DOM, so it's unit-tested.
-- `render/`: Three.js world. The road is straight geometry bent in the vertex shader (`uCurve·d²`, `uHill·d²`), so curves and hills are free and endless. Procedural buildings (windows in the shader, no textures), wet-road light pools and reflection streaks, tail-light trails, searchlights, blade signs, elevated expressway, bloom + lens pass (speed blur, chromatic aberration, anime speed lines, film grade).
-- `audio.js`: everything synthesized with WebAudio (engine, SFX, an original synth loop).
-- `config.js`: garage data: 3 original cars, 6 liveries, 5 underglows, 4 times of day, rain, 3 difficulties, quality presets.
-- `engine.js`: fixed-step loop (120 Hz), dynamic resolution, gamepad, events → particles and sound.
+## REDLINE
+A night drive through an original Midnight-Tokyo-style megacity. Five data shards decrypt one case file; ten files end the run at the lookout above the city. Junctions every 1.5 km let you hold a lane to pick Expressway or Backstreets (tighter, shards ×1.5); a tunnel follows each one. Garage: three cars and the Tsubame bike (lean, power-slide on hard braking), liveries, underglow, four times of day, rain, three difficulties, steering assist, reduced effects, synthesized sound and music. Keyboard, touch and gamepad.
 
-Test hook: `window.__redline` exposes `pause()`, `advance(sec)`, `state()` for screenshots and debugging.
+Art direction borrows the language of 80s cel-anime cities and light-cycle films; no vehicles, logos, characters or places from any film or game are used.
+
+`window.__redline` exposes `pause()`, `advance(sec)`, `state()` for screenshots and debugging.

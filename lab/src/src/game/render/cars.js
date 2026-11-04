@@ -191,7 +191,7 @@ function buildBike(livery, glowHex) {
   const g = new THREE.Group();
   const L = 2.9, W = 0.64;
   const M = {
-    paint: new THREE.MeshPhysicalMaterial({ color: livery.body, metalness: 0.25, roughness: 0.36, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.0 }),
+    paint: new THREE.MeshPhysicalMaterial({ color: livery.body, emissive: livery.body, emissiveIntensity: 0.32, metalness: 0.2, roughness: 0.36, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.0 }),
     stripe: new THREE.MeshPhysicalMaterial({ color: livery.stripe, metalness: 0.3, roughness: 0.4, clearcoat: 1, polygonOffset: true, polygonOffsetFactor: -1 }),
     trim: new THREE.MeshStandardMaterial({ color: livery.trim, metalness: 0.75, roughness: 0.3 }),
     glass: new THREE.MeshPhysicalMaterial({ color: '#0a0a12', metalness: 0.9, roughness: 0.03, envMapIntensity: 2.2, transparent: true, opacity: 0.85 }),
@@ -217,6 +217,20 @@ function buildBike(livery, glowHex) {
   g.add(body);
   body.geometry.computeBoundingBox();
   const RZ = body.geometry.boundingBox.max.z;
+  // light lines: the fairing outline, inset a touch, glowing along each flank
+  {
+    const sh = new THREE.Shape();
+    fairing(sh);
+    const pts2 = sh.getSpacedPoints(160);
+    const lineMat = new THREE.LineBasicMaterial({ color: HDR(glowHex || livery.stripe, 3.2) });
+    for (const sx of [-1, 1]) {
+      const pts3 = pts2.map((p) => new THREE.Vector3(sx * (W / 2 + 0.115), 0.04 + (p.y - 0.62) * 0.93 + 0.62, -(p.x - L / 2)));
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts3), lineMat));
+    }
+    // a second, lower accent line along the belly
+    const belly = [[0.5, 0.48], [1.2, 0.46], [2.2, 0.5], [2.75, 0.62]].map(([x, y]) => [x, y]);
+    for (const sx of [-1, 1]) g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(belly.map(([x, y]) => new THREE.Vector3(sx * (W / 2 + 0.13), y, -(x - L / 2)))), lineMat));
+  }
   const stripe = new THREE.Mesh(profile(fairing, L, 0.16, 0), M.stripe);
   stripe.scale.set(1, 1.01, 1.008);
   g.add(stripe);
@@ -318,7 +332,7 @@ export function buildPlayerCar(kind, livery, glowHex) {
   const C = CHASSIS[kind] || CHASSIS.wedge;
   const g = new THREE.Group();
   const M = {
-    paint: new THREE.MeshPhysicalMaterial({ color: livery.body, metalness: 0.25, roughness: 0.38, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 0.9 }),
+    paint: new THREE.MeshPhysicalMaterial({ color: livery.body, emissive: livery.body, emissiveIntensity: 0.1, metalness: 0.25, roughness: 0.38, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 0.9 }),
     stripe: new THREE.MeshPhysicalMaterial({ color: livery.stripe, metalness: 0.3, roughness: 0.4, clearcoat: 1, clearcoatRoughness: 0.1, polygonOffset: true, polygonOffsetFactor: -1 }),
     trim: new THREE.MeshStandardMaterial({ color: livery.trim, metalness: 0.7, roughness: 0.35 }),
     glass: new THREE.MeshPhysicalMaterial({ color: '#05050a', metalness: 0.9, roughness: 0.04, envMapIntensity: 2.2 }),

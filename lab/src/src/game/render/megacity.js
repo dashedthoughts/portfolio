@@ -210,7 +210,9 @@ export function createViaduct(scene, roadLen, near) {
     flow.setColorAt(i * 2 + 1, col);
   });
 
+  const all = [group, flow, deck, parapetL, parapetR, tubeL, tubeT];
   return {
+    setVisible(v) { all.forEach((o) => (o.visible = v)); },
     update(S, t) {
       group.position.z = S.z % GAP;
       for (let i = 0; i < FLOW; i++) {
@@ -225,4 +227,118 @@ export function createViaduct(scene, roadLen, near) {
       flow.instanceMatrix.needsUpdate = true;
     },
   };
+}
+
+// ---------------------------------------------------------------- the tower (original lattice design)
+// Four tapered legs, ring frames, X-bracing, two decks and a mast, drawn as glowing lines in red/white bands.
+export function createTower(parent) {
+  const g = new THREE.Group();
+  const H = 330, B = 46, T = 5;
+  const pts = [], cols = [];
+  const red = HDR('#ff3b1f', 3.2), white = HDR('#fff1e0', 2.6);
+  const half = (y) => B + (T - B) * Math.pow(y / H, 0.75);
+  const corner = (y, k) => { const h = half(y); return [[-h, y, -h], [h, y, -h], [h, y, h], [-h, y, h]][k]; };
+  const seg = (a, b, c) => { pts.push(...a, ...b); cols.push(c.r, c.g, c.b, c.r, c.g, c.b); };
+  const RINGS = 22;
+  for (let i = 0; i < RINGS; i++) {
+    const y0 = (i / RINGS) * H * 0.86, y1 = ((i + 1) / RINGS) * H * 0.86;
+    const c = Math.floor(i / 2) % 2 ? white : red;
+    for (let k = 0; k < 4; k++) {
+      seg(corner(y0, k), corner(y1, k), c);                          // leg
+      seg(corner(y1, k), corner(y1, (k + 1) % 4), c);                 // ring
+      seg(corner(y0, k), corner(y1, (k + 1) % 4), c);                 // brace
+      seg(corner(y0, (k + 1) % 4), corner(y1, k), c);                 // brace
+    }
+  }
+  // mast
+  seg([0, H * 0.86, 0], [0, H, 0], white);
+  seg([-2, H * 0.86, 0], [0, H, 0], red);
+  seg([2, H * 0.86, 0], [0, H, 0], red);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  g.add(new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ vertexColors: true, fog: false })));
+  // observation decks: lit window bands
+  const deckMat = new THREE.MeshBasicMaterial({ color: HDR('#ffb070', 0.9), fog: false });
+  for (const [y, s] of [[H * 0.36, 1.05], [H * 0.66, 1.1]]) {
+    const w = half(y) * 2 * s;
+    const d = new THREE.Mesh(new THREE.BoxGeometry(w, 4, w), deckMat);
+    d.position.y = y;
+    g.add(d);
+  }
+  // beacons
+  const glow = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), glowMaterial({ gain: 3, fog: false, bent: false }), 6);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion();
+  [[0, H, 0, 30], [-half(H * 0.66) - 4, H * 0.66, 0, 18], [half(H * 0.66) + 4, H * 0.66, 0, 18], [0, H * 0.86, 0, 22], [-B, 4, -B, 16], [B, 4, B, 16]].forEach(([x, y, z, s], i) => {
+    glow.setMatrixAt(i, m.compose(new THREE.Vector3(x, y, z), q, new THREE.Vector3(s, s, s)));
+    glow.setColorAt(i, new THREE.Color(i < 4 ? '#ff2a1a' : '#ffb27a'));
+  });
+  glow.frustumCulled = false;
+  g.add(glow);
+  g.position.set(-330, -30, -1180);
+  g.scale.setScalar(1.3);
+  parent.add(g);
+  return g;
+}
+
+// ---------------------------------------------------------------- the city carpet below the elevated road
+// Seen from the lookout: sodium street grid and scattered windows to the horizon.
+export function createCityCarpet(parent) {
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uTime: U.uTime, uA: { value: HDR('#ff8a2a', 1.6) }, uB: { value: HDR('#eef4ff', 1.2) }, uC: { value: HDR('#ff2a3a', 1.4) } },
+    vertexShader: 'varying vec2 vP; varying float vD; void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vP = wp.xz; vec4 mv = viewMatrix * wp; vD = -mv.z; gl_Position = projectionMatrix * mv; }',
+    fragmentShader: `
+      uniform vec3 uA, uB, uC; uniform float uTime; varying vec2 vP; varying float vD;
+      float h(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+      void main() {
+        vec2 cell = vP / 64.0; vec2 id = floor(cell); vec2 f = fract(cell);
+        float street = max(smoothstep(0.035, 0.0, abs(f.x - 0.5)), smoothstep(0.035, 0.0, abs(f.y - 0.5)));
+        float major = step(0.8, h(id * 0.37));
+        vec3 col = uA * street * (0.35 + 0.65 * major);
+        vec2 w = vP / 6.0; vec2 wid = floor(w);
+        float lit = step(0.93, h(wid + 3.1)) * smoothstep(0.45, 0.2, length(fract(w) - 0.5));
+        col += mix(uB, uC, step(0.85, h(wid))) * lit * (0.6 + 0.4 * sin(uTime * 2.0 + h(wid) * 30.0));
+        float fade = smoothstep(2600.0, 600.0, vD) * smoothstep(60.0, 220.0, vD);
+        gl_FragColor = vec4(col * fade, 1.0);
+      }`,
+    fog: false, depthWrite: false,
+  });
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000).rotateX(-Math.PI / 2), mat);
+  plane.position.y = -45;
+  plane.renderOrder = -5;
+  parent.add(plane);
+  return plane;
+}
+
+// ---------------------------------------------------------------- tunnel (after each junction)
+export function createTunnel(scene, length) {
+  const g = new THREE.Group();
+  const segs = Math.round(length / 2);
+  const wallGeo = new THREE.BoxGeometry(0.8, 10.4, length, 1, 1, segs).translate(0, 5.2, -length / 2);
+  const roofGeo = new THREE.BoxGeometry(17.6, 0.8, length, 1, 1, segs).translate(0, 10.4, -length / 2);
+  const concrete = std({ color: '#100e14', roughness: 0.9, metalness: 0.05 });
+  const lw = new THREE.Mesh(wallGeo, concrete); lw.position.x = -8.4;
+  const rw = new THREE.Mesh(wallGeo, concrete); rw.position.x = 8.4;
+  const roof = new THREE.Mesh(roofGeo, concrete);
+  g.add(lw, rw, roof);
+  // portal face with a sign band
+  const portal = new THREE.Mesh(new THREE.BoxGeometry(20, 4.5, 1.2).translate(0, 12.6, 0), concrete);
+  g.add(portal);
+  const band = new THREE.Mesh(new THREE.BoxGeometry(20, 0.18, 0.1).translate(0, 10.9, 0.65), basic({ color: HDR('#ff8a2a', 4) }));
+  g.add(band);
+  // strobing ceiling lights: the rhythm you feel at speed
+  const n = Math.floor(length / 6);
+  const lights = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.12, 0.5), basic({ color: HDR('#ffb35a', 5) }), n * 2);
+  const wallStrip = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.18, 3.4), basic({ color: HDR('#00f0ff', 2.6) }), n * 2);
+  const m = new THREE.Matrix4();
+  for (let i = 0; i < n; i++) {
+    for (const sx of [-1, 1]) {
+      lights.setMatrixAt(i * 2 + (sx > 0 ? 1 : 0), m.makeTranslation(sx * 4.2, 9.9, -3 - i * 6));
+      wallStrip.setMatrixAt(i * 2 + (sx > 0 ? 1 : 0), m.makeTranslation(sx * 7.95, 1.2, -3 - i * 6));
+    }
+  }
+  for (const im of [lights, wallStrip]) { im.frustumCulled = false; g.add(im); }
+  g.traverse((o) => (o.frustumCulled = false));
+  scene.add(g);
+  return g;
 }

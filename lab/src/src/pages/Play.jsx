@@ -105,6 +105,20 @@ export default function Play() {
         case 'glitch': pop('SIGNAL GLITCH', 'alert', 'STEERING INVERTED'); break;
         case 'glitch-end': pop('SIGNAL RESTORED', 'data'); break;
         case 'hit': pop('IMPACT', 'alert', `INTEGRITY ${Math.max(0, e.lives)}`); break;
+        case 'junction':
+          pop(e.route === 'backstreets' ? 'BACKSTREETS' : 'EXPRESSWAY', e.route === 'backstreets' ? 'route' : 'routex', e.route === 'backstreets' ? 'SHARDS ×1.5 · TIGHTER STREETS · SLOWER TRAFFIC' : 'OPEN ROAD · FAST TRAFFIC');
+          break;
+        case 'finale': pop('ALL TEN FILES', 'ok', 'LAST EXIT: THE LOOKOUT'); break;
+        case 'complete': {
+          const d = cfgRef.current.difficulty;
+          const prev = getBestBy(d);
+          setNewBest(e.score > prev);
+          if (e.score > prev) setBestBy(d, e.score);
+          setBestState(Math.max(prev, e.score));
+          setFinal({ ...e, complete: true });
+          setTimeout(() => setPhase('over'), 5200);
+          break;
+        }
         case 'casefile': {
           const p = projects[(e.n - 1) % projects.length];
           addDecrypted(p.slug);
@@ -220,7 +234,7 @@ export default function Play() {
       <div className="play__fx" aria-hidden="true" />
 
       {/* ------------------------------------------------ HUD */}
-      {(phase === 'run' || phase === 'paused') && !counting && (
+      {(phase === 'run' || phase === 'paused') && !counting && !hud.finale && (
         <div className="hud2" aria-hidden="true">
           <div className="hud2__score">
             <span className="hud-k">SCORE</span>
@@ -249,6 +263,13 @@ export default function Play() {
               </span>
             </div>
             <button type="button" className="hud2__pause" onClick={togglePause} aria-label="Pause">❚❚</button>
+          </div>
+          <div className="hud2__route">
+            <span className="hud-k">SECTOR {pad2(hud.sector || 1)}</span>
+            <b className={hud.route === 'backstreets' ? 'tone-signal' : 'tone-data'}>{hud.route === 'backstreets' ? 'BACKSTREETS' : 'EXPRESSWAY'}</b>
+            {!hud.finale && hud.toJunction > 0 && hud.toJunction < 450 && (
+              <span className="junction-hint">JUNCTION IN {hud.toJunction} M · LEFT LANES EXPRESSWAY · RIGHT LANE BACKSTREETS</span>
+            )}
           </div>
           <div className="hud2__dash">
             <span className={`dash-status tone-${status[1]}`}>{status[0]}</span>
@@ -315,8 +336,9 @@ export default function Play() {
             {tab === 'run' && (
               <div className="tabpane">
                 <p className="garage__lede">
-                  Ten case files are scattered across the ring road as data shards. Five shards decrypt one. Chain
-                  them for a multiplier, thread traffic for near-misses, sit in a slipstream to vent heat.
+                  Ten of my case files are loose on the ring road as data shards. Every five you grab decrypts one.
+                  Hold a lane under the junction signs to pick your route, tuck in behind traffic to cool the engine,
+                  and find out where the road ends.
                 </p>
                 <Seg
                   label="TRAFFIC"
@@ -327,12 +349,12 @@ export default function Play() {
                 <p className="garage__note">{DIFFICULTY[cfg.difficulty].blurb} Best on {DIFFICULTY[cfg.difficulty].name}: <b>{best.toLocaleString('en-IN')}</b></p>
                 <dl className="controls">
                   <div><dt>◀ ▶ · A D</dt><dd>steer</dd></div>
-                  <div><dt>▲ · W · SPACE</dt><dd>overclock: ×2 score, heat builds</dd></div>
+                  <div><dt>▲ · W · SPACE</dt><dd>overclock: double points, heat builds</dd></div>
                   <div><dt>▼ · S</dt><dd>brake</dd></div>
                   <div><dt>ESC · P</dt><dd>pause</dd></div>
                   <div><dt>GAMEPAD</dt><dd>stick · A/RT boost · B/LT brake</dd></div>
                 </dl>
-                <p className="garage__warn">Max heat = signal glitch. Steering inverts until you cool off.</p>
+                <p className="garage__warn">Run the heat to the top and the signal glitches: steering flips until you cool off.</p>
               </div>
             )}
 
@@ -428,8 +450,18 @@ export default function Play() {
       {/* ------------------------------------------------ RESULTS */}
       {phase === 'over' && final && (
         <section className="panel panel--over" aria-labelledby="rl-over">
-          <p className="hud-label">// CONNECTION LOST · {DIFFICULTY[cfg.difficulty].name}</p>
-          <h2 id="rl-over" className="panel__h glitch-once" data-text="FLATLINED">FLATLINED</h2>
+          {final.complete ? (
+            <>
+              <p className="hud-label">// LAST EXIT · THE LOOKOUT · {DIFFICULTY[cfg.difficulty].name}</p>
+              <h2 id="rl-over" className="panel__h panel__h--win">THE CITY IS YOURS</h2>
+              <p className="garage__lede">All ten files, decrypted. Thanks for the drive. The work is waiting below.</p>
+            </>
+          ) : (
+            <>
+              <p className="hud-label">// CONNECTION LOST · {DIFFICULTY[cfg.difficulty].name}</p>
+              <h2 id="rl-over" className="panel__h glitch-once" data-text="FLATLINED">FLATLINED</h2>
+            </>
+          )}
           <div className="result-hero">
             <span className="hud-k">FINAL SCORE</span>
             <b>{final.score.toLocaleString('en-IN')}</b>
@@ -442,10 +474,11 @@ export default function Play() {
             <div><span>NEAR MISSES</span><b>{final.nearMisses}</b></div>
             <div><span>SHARDS</span><b>{final.shards}</b></div>
             <div><span>FILES</span><b>{final.files}/{projects.length}</b></div>
+            {final.sectors && <div><span>SECTORS</span><b>{final.sectors}</b></div>}
           </div>
           {runFiles.length > 0 ? (
             <>
-              <p className="hud-label">DECRYPTED THIS RUN · READ THEM</p>
+              <p className="hud-label">{final.complete ? 'EVERY FILE · READ THEM' : 'DECRYPTED THIS RUN · READ THEM'}</p>
               <ul className="loot">
                 {runFiles.map((p) => (
                   <li key={p.slug}><Link to={`/p/${p.slug}`}>{p.title} ›</Link></li>
@@ -453,7 +486,7 @@ export default function Play() {
               </ul>
             </>
           ) : (
-            <p className="garage__note">No files cracked. Chain five shards and one opens.</p>
+            <p className="garage__note">No files cracked this time. Five shards open one.</p>
           )}
           <div className="btn-row">
             <button type="button" className="btn btn--signal" onClick={start} autoFocus>

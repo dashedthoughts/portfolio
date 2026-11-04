@@ -200,3 +200,13 @@
   .hud2__right { right: var(--sp-4); top: var(--sp-4); gap: var(--sp-4); }
   .dash-speed { font-size: 2.6rem; }
 }
+
+/* route + junction */
+.hud2__route { position: absolute; left: var(--sp-6); bottom: var(--sp-6); display: grid; gap: 6px; justify-items: start; max-width: min(420px, 60vw); }
+.hud2__route b { font: 700 0.95rem / 1 var(--f-display); letter-spacing: 0.16em; padding: 5px 9px; clip-path: var(--shape-sm); }
+.junction-hint { font: 400 0.68rem / 1.45 var(--f-mono); letter-spacing: 0.1em; color: var(--signal); background: rgba(7,5,12,.7); padding: 6px 9px; border-left: 2px solid var(--signal); animation: blink 1s steps(2) 3; }
+.panel__h--win { color: var(--success); text-shadow: 3px 3px 0 var(--alert); }
+@media (pointer: coarse) { .hud2__route { bottom: auto; top: 150px; left: var(--sp-4); max-width: 55vw; } }
+.pop--route b, .pop--routex b { font: 400 clamp(1.8rem, 5.5vw, 3.4rem) / 1 var(--f-name); letter-spacing: 0.02em; text-shadow: 3px 3px 0 var(--alert); }
+.pop--route b { color: var(--signal); }
+.pop--routex b { color: var(--data); }

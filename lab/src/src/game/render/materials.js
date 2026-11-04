@@ -67,7 +67,7 @@ export function buildingMaterial({ far = false } = {}) {
       ...U,
       uWin: { value: [new THREE.Color(), new THREE.Color(), new THREE.Color(), new THREE.Color()] },
       uBase: { value: new THREE.Color('#0b0912') },
-      uGain: { value: far ? 0.75 : 1.1 },
+      uGain: { value: far ? 0.42 : 1.1 },
       uFar: { value: far ? 1 : 0 },
     },
     vertexShader: /* glsl */ `
@@ -105,7 +105,7 @@ export function buildingMaterial({ far = false } = {}) {
           float win = smoothstep(0.14, 0.2, f.x) * smoothstep(0.86, 0.8, f.x) * smoothstep(0.2, 0.27, f.y) * smoothstep(0.82, 0.75, f.y);
           float r = h21(id + seed * 17.0);
           float floorOn = step(0.5, h21(vec2(id.y * 1.7, seed * 31.0)));
-          float lit = max(step(0.6, r) * floorOn, step(0.95, r));
+          float lit = max(step(uFar > 0.5 ? 0.78 : 0.6, r) * floorOn, step(0.95, r));
           // anti-alias: when a window is smaller than ~2px, fade to the facade's average glow
           vec2 fw = fwidth(uv / cell);
           float aa = clamp(max(fw.x, fw.y) * 2.5 - 0.4, 0.0, 1.0);

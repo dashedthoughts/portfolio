@@ -12,6 +12,11 @@ export const CARS = {
     blurb: 'Long-legged grand tourer. Highest top end, sheds heat fast, lazy in the bends.',
     top: 1.07, accel: 0.88, grip: 0.9, cool: 1.3,
   },
+  bike: {
+    name: 'TSUBAME',
+    blurb: 'Long, low, fully faired. The quickest thing in the garage off the line; leans hard and slips through gaps a car can\'t.',
+    top: 1.04, accel: 1.18, grip: 1.08, cool: 0.95, bike: true,
+  },
   kei: {
     name: 'MOSQUITO',
     blurb: 'Tiny city box. Launches like a slingshot and darts between lanes. Runs hot.',

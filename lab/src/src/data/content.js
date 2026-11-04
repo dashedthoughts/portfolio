@@ -1,15 +1,14 @@
-// All site content. Copied verbatim from the live v8 build (dashedthoughts.github.io/portfolio).
+// All site content. Carried over from the live portfolio (dashedthoughts.github.io/portfolio).
 // Stats: CV-verified numbers only. Memes: only u/dashedthoughts. Contact: anur.dash@gmail.com.
 
-const NOTION = 'https://dashedthoughts.notion.site/';
 
-// Paths are relative to /lab/index.html, so shared files at the repo root are one level up.
-export const ROOT = '../';
+// Paths are relative to index.html at the repo root.
+export const ROOT = './';
 
 export const EMAIL = 'anur.dash@gmail.com';
 export const REDDIT = 'https://www.reddit.com/user/dashedthoughts';
 export const LINKEDIN = 'https://www.linkedin.com/in/adash14/';
-export const NOTION_HOME = NOTION;
+export const CLASSIC = 'https://dashedthoughts.github.io/portfolio/';
 export const RESUME = ROOT + 'resume.pdf';
 
 export const projects = [
@@ -21,7 +20,6 @@ export const projects = [
     collaborators: [],
     category: 'Featured',
     sticker: 'FEATURED',
-    notion: NOTION + 'Reelationships-a-B2B-Creator-Collaboration-App-2aaf7852775b8122bd25f8bb72a96f53',
   },
   {
     slug: 'makemytrip-maps',
@@ -32,7 +30,6 @@ export const projects = [
     collaborators: ['Vidita Dhingra', 'Jasjeev Singh Sahni'],
     category: 'Featured',
     sticker: 'FEATURED',
-    notion: NOTION + 'Revamped-Maps-Experience-for-MakeMyTrip-2aaf7852775b8102a6a7d69318fc6518',
   },
   {
     slug: 'tathya-dpi',
@@ -42,7 +39,6 @@ export const projects = [
     collaborators: [],
     category: 'Featured',
     sticker: 'FEATURED',
-    notion: NOTION + 'Data-as-a-DPI-with-Tathya-2abf7852775b8082a808ed09ba3affe5',
   },
   {
     slug: 'netflix-remixed',
@@ -53,7 +49,6 @@ export const projects = [
     collaborators: [],
     category: 'Research & Remixes',
     sticker: 'REMIX',
-    notion: NOTION + 'Netflix-Remixed-2abf7852775b8094afc4c61e0d603dd4',
   },
   {
     slug: 'spotify-remixed',
@@ -64,7 +59,6 @@ export const projects = [
     collaborators: [],
     category: 'Research & Remixes',
     sticker: 'REMIX',
-    notion: NOTION + 'Spotify-Remixed-2abf7852775b809fac14d591f425c130',
   },
   {
     slug: 'nothing-frame',
@@ -75,7 +69,6 @@ export const projects = [
     collaborators: ['Gaurang Sultania', 'Subrat Shukla'],
     category: 'Research & Remixes',
     sticker: 'MVP',
-    notion: NOTION + 'Nothing-Frame-Experience-2abf7852775b80bbab5ad54d739f3482',
   },
   {
     slug: 'zepto-teardown',
@@ -86,7 +79,6 @@ export const projects = [
     collaborators: [],
     category: 'Teardowns & Brand Research',
     sticker: 'TEARDOWN',
-    notion: NOTION + 'Zepto-2aaf7852775b8191bfc1dadce619a5db',
   },
   {
     slug: 'zerodha-teardown',
@@ -97,7 +89,6 @@ export const projects = [
     collaborators: [],
     category: 'Teardowns & Brand Research',
     sticker: 'TEARDOWN',
-    notion: NOTION + 'Zerodha-2abf7852775b8032ae0be3c1c57f5d90',
   },
   {
     slug: 'ferrari',
@@ -108,7 +99,6 @@ export const projects = [
     collaborators: [],
     category: 'Teardowns & Brand Research',
     sticker: 'BRAND',
-    notion: NOTION + 'Ferrari-2aaf7852775b81269402c29d886480b1',
   },
   {
     slug: 'finance-chatbot',
@@ -118,69 +108,12 @@ export const projects = [
     collaborators: ['Jasjeev Singh Sahni', 'Ekta Gola', 'Gaurang Sultania'],
     category: 'Journeys',
     sticker: 'JOURNEY',
-    notion: NOTION + 'AI-Chatbot-for-Personal-Finance-App-2aaf7852775b8132badcde8aae107de1',
   },
 ];
 
 export const categories = ['Featured', 'Research & Remixes', 'Teardowns & Brand Research', 'Journeys'];
 
-// Case-study bodies: ['h', heading] · ['p', text] · ['embed', url] · ['pdf', path, label]
-export const caseStudies = {
-  reelationships: [
-    ['h', 'MVP · live prototype'],
-    ['embed', 'https://reelationships.lovable.app/'],
-    ['h', 'User Research, Personas & User Journey'],
-    ['pdf', 'assets/reelationships__Reelationships_User_Research.pdf', 'User Research Deck'],
-    ['h', 'Product Brief'],
-    ['pdf', 'assets/reelationships__Reelationships_Product_Brief.pdf', 'Product Brief · A B2B Marketplace Where Brands Meet Influencers'],
-  ],
-  'makemytrip-maps': [
-    ['h', 'Problem Hypothesis, User Journey, Prototypes & GTM'],
-    ['pdf', 'assets/makemytrip-maps__ISB_SWOTs_Up_MMT.pdf', 'Full Presentation'],
-    ['h', 'MVP 1 · Lovable'],
-    ['embed', 'https://dynamic-trip-planner.lovable.app/'],
-    ['h', 'MVP 2 · v0'],
-    ['embed', 'https://v0-make-my-trip-canvas.vercel.app/'],
-  ],
-  'tathya-dpi': [
-    ['p', 'Built with Sauhard Aggarwal, Ekta Gola, Vidita Dhingra & Aryan Mulchandani.'],
-    ['h', 'Live platform'],
-    ['embed', 'https://tathya-dpi-platform.vercel.app/'],
-    ['h', 'The deck'],
-    ['pdf', 'assets/tathya-dpi__Tathya.pdf', 'Tathya · Data as a DPI'],
-  ],
-  'netflix-remixed': [
-    ['h', 'The remix deck'],
-    ['pdf', 'assets/netflix-remixed__Netflix_PDF.pdf', 'Netflix Remixed'],
-  ],
-  'spotify-remixed': [
-    ['h', 'The remix deck'],
-    ['pdf', 'assets/spotify-remixed__Blitz_spotifyAI.pdf', 'Spotify AI DJ · Blitz'],
-  ],
-  'nothing-frame': [
-    ['p', 'Designed Nothing Frame (1), a lightweight mixed-reality eyewear concept blending digital and physical worlds through gaze, voice, and gesture control. With Gaurang Sultania and Subrat Shukla, built a fully clickable Nothing X prototype using Rocket to demo real-world interactions like "frame your focus" and "frame your path," showing how seamless spatial computing could be.'],
-    ['h', 'Clickable prototype'],
-    ['embed', 'https://preview.builtwithrocket.new/nothing-frame-4umvi56'],
-    ['h', 'Poster'],
-    ['pdf', 'assets/nothing-frame__NothingIncubator_Sub.pdf', 'Incubator Submission'],
-  ],
-  'zepto-teardown': [
-    ['h', 'Product Teardown'],
-    ['pdf', 'assets/zepto-teardown__ZEPTO_Teardown.pdf', 'Zepto · Product Teardown'],
-  ],
-  'zerodha-teardown': [
-    ['p', 'A quick brief with user flows.'],
-    ['pdf', 'assets/zerodha-teardown__ZERODHA_Teardown.pdf', 'Zerodha · Product Teardown'],
-  ],
-  ferrari: [
-    ['h', 'The Amazing World of Ferrari'],
-    ['pdf', 'assets/ferrari__Ferrari_Scuderia_FFT_MKTGvF.pdf', 'Scuderia · Marketing Deep-Dive'],
-  ],
-  'finance-chatbot': [
-    ['h', 'PRD & Research'],
-    ['pdf', 'assets/finance-chatbot__FINAL_Minimum_Viable_Powerhouse_ISB.pdf', 'Minimum Viable Powerhouse'],
-  ],
-};
+export { caseStudies } from './cases.js';
 
 export const memes = [
   {

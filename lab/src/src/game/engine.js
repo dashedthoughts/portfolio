@@ -70,6 +70,9 @@ export function createRedline(canvas, opts = {}) {
       case 'count': audio?.sfx('count'); break;
       case 'go': audio?.sfx('go'); break;
       case 'over': audio?.sfx('over'); audio?.musicStop(); break;
+      case 'junction': audio?.sfx('slip'); break;
+      case 'finale': audio?.sfx('file'); break;
+      case 'complete': audio?.engine(false, 0, false); audio?.musicStop(); break;
       default:
     }
     onEvent(e);
@@ -164,6 +167,10 @@ export function createRedline(canvas, opts = {}) {
       count: S.count,
       over: S.over,
       km: (S.dist / 1000).toFixed(1),
+      route: S.route,
+      sector: S.sector,
+      toJunction: Math.max(0, Math.round(S.nextJunction - S.z)),
+      finale: S.finale,
     });
   }
 
@@ -238,6 +245,7 @@ export function createRedline(canvas, opts = {}) {
     },
     // test hook: advance the simulation by `sec` seconds, then draw one frame
     advance(sec) {
+      if (fx.view === 'showroom') sec = 0;
       Object.assign(sim.input, { left: keyInput.left, right: keyInput.right, boost: keyInput.boost, brake: keyInput.brake });
       const n = Math.round(sec / STEP);
       for (let i = 0; i < n; i++) {

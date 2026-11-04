@@ -1,0 +1,280 @@
+{
+ "ferrari": [
+  {
+   "block": "2aaf7852-775b-80f7-823a-d5bda700e89f",
+   "kind": "pdf",
+   "file": "ferrari/ferrari-scuderia-fft-mktgvf.pdf",
+   "bytes": 6704068,
+   "name": "Ferrari_Scuderia_FFT_MKTGvF.pdf",
+   "pages": [
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-01.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-02.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-03.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-04.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-05.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-06.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-07.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-08.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-09.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-10.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-11.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-12.jpg",
+    "ferrari/ferrari-scuderia-fft-mktgvf/p-13.jpg"
+   ],
+   "ratio": 1.7778
+  }
+ ],
+ "finance-chatbot": [
+  {
+   "block": "2aaf7852-775b-81cf-8987-e8c6d167d275",
+   "kind": "pdf",
+   "file": "finance-chatbot/final-minimum-viable-powerhouse-isb.pdf",
+   "bytes": 1248100,
+   "name": "FINAL_Minimum_Viable_Powerhouse_ISB.pdf",
+   "pages": [
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-01.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-02.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-03.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-04.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-05.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-06.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-07.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-08.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-09.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-10.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-11.jpg",
+    "finance-chatbot/final-minimum-viable-powerhouse-isb/p-12.jpg"
+   ],
+   "ratio": 1.7778
+  }
+ ],
+ "makemytrip-maps": [
+  {
+   "block": "2aaf7852-775b-8123-95b8-d87e389b6346",
+   "kind": "pdf",
+   "file": "makemytrip-maps/isb-swots-up-mmt.pdf",
+   "bytes": 4391167,
+   "name": "ISB_SWOTs_Up_MMT.pdf",
+   "pages": [
+    "makemytrip-maps/isb-swots-up-mmt/p-1.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-2.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-3.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-4.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-5.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-6.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-7.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-8.jpg",
+    "makemytrip-maps/isb-swots-up-mmt/p-9.jpg"
+   ],
+   "ratio": 1.7778
+  }
+ ],
+ "netflix-remixed": [
+  {
+   "block": "2abf7852-775b-80b2-a143-c5b657ff1cf0",
+   "kind": "pdf",
+   "file": "netflix-remixed/netflix-pdf.pdf",
+   "bytes": 3542878,
+   "name": "Netflix_PDF.pdf",
+   "pages": [
+    "netflix-remixed/netflix-pdf/p-1.jpg",
+    "netflix-remixed/netflix-pdf/p-2.jpg",
+    "netflix-remixed/netflix-pdf/p-3.jpg",
+    "netflix-remixed/netflix-pdf/p-4.jpg",
+    "netflix-remixed/netflix-pdf/p-5.jpg",
+    "netflix-remixed/netflix-pdf/p-6.jpg",
+    "netflix-remixed/netflix-pdf/p-7.jpg",
+    "netflix-remixed/netflix-pdf/p-8.jpg"
+   ],
+   "ratio": 1.7778
+  }
+ ],
+ "nothing-frame": [
+  {
+   "block": "2abf7852-775b-8060-a421-c2fcc4cac4c2",
+   "kind": "pdf",
+   "file": "nothing-frame/nothingincubator-sub.pdf",
+   "bytes": 715698,
+   "name": "NothingIncubator_Sub.pdf",
+   "pages": [
+    "nothing-frame/nothingincubator-sub/p-1.jpg"
+   ],
+   "ratio": 0.692
+  }
+ ],
+ "reelationships": [
+  {
+   "block": "2abf7852-775b-802c-bf16-ec0a11043a28",
+   "kind": "mp4",
+   "file": "reelationships/swpm-demo-1.mp4",
+   "bytes": 7319004,
+   "name": "SWPM_Demo_(1).mp4",
+   "w": 848,
+   "h": 480,
+   "dur": 295.845011,
+   "poster": "reelationships/swpm-demo-1-poster.jpg"
+  },
+  {
+   "block": "2aaf7852-775b-81f4-bc69-ea7f7c1d2ac2",
+   "kind": "pdf",
+   "file": "reelationships/reelationships-user-research.pdf",
+   "bytes": 551041,
+   "name": "Reelationships_User_Research.pdf",
+   "pages": [
+    "reelationships/reelationships-user-research/p-01.jpg",
+    "reelationships/reelationships-user-research/p-02.jpg",
+    "reelationships/reelationships-user-research/p-03.jpg",
+    "reelationships/reelationships-user-research/p-04.jpg",
+    "reelationships/reelationships-user-research/p-05.jpg",
+    "reelationships/reelationships-user-research/p-06.jpg",
+    "reelationships/reelationships-user-research/p-07.jpg",
+    "reelationships/reelationships-user-research/p-08.jpg",
+    "reelationships/reelationships-user-research/p-09.jpg",
+    "reelationships/reelationships-user-research/p-10.jpg",
+    "reelationships/reelationships-user-research/p-11.jpg",
+    "reelationships/reelationships-user-research/p-12.jpg",
+    "reelationships/reelationships-user-research/p-13.jpg",
+    "reelationships/reelationships-user-research/p-14.jpg",
+    "reelationships/reelationships-user-research/p-15.jpg",
+    "reelationships/reelationships-user-research/p-16.jpg",
+    "reelationships/reelationships-user-research/p-17.jpg",
+    "reelationships/reelationships-user-research/p-18.jpg",
+    "reelationships/reelationships-user-research/p-19.jpg",
+    "reelationships/reelationships-user-research/p-20.jpg",
+    "reelationships/reelationships-user-research/p-21.jpg",
+    "reelationships/reelationships-user-research/p-22.jpg",
+    "reelationships/reelationships-user-research/p-23.jpg",
+    "reelationships/reelationships-user-research/p-24.jpg",
+    "reelationships/reelationships-user-research/p-25.jpg",
+    "reelationships/reelationships-user-research/p-26.jpg",
+    "reelationships/reelationships-user-research/p-27.jpg",
+    "reelationships/reelationships-user-research/p-28.jpg",
+    "reelationships/reelationships-user-research/p-29.jpg",
+    "reelationships/reelationships-user-research/p-30.jpg",
+    "reelationships/reelationships-user-research/p-31.jpg",
+    "reelationships/reelationships-user-research/p-32.jpg",
+    "reelationships/reelationships-user-research/p-33.jpg",
+    "reelationships/reelationships-user-research/p-34.jpg",
+    "reelationships/reelationships-user-research/p-35.jpg",
+    "reelationships/reelationships-user-research/p-36.jpg",
+    "reelationships/reelationships-user-research/p-37.jpg",
+    "reelationships/reelationships-user-research/p-38.jpg",
+    "reelationships/reelationships-user-research/p-39.jpg",
+    "reelationships/reelationships-user-research/p-40.jpg",
+    "reelationships/reelationships-user-research/p-41.jpg",
+    "reelationships/reelationships-user-research/p-42.jpg",
+    "reelationships/reelationships-user-research/p-43.jpg",
+    "reelationships/reelationships-user-research/p-44.jpg",
+    "reelationships/reelationships-user-research/p-45.jpg",
+    "reelationships/reelationships-user-research/p-46.jpg",
+    "reelationships/reelationships-user-research/p-47.jpg"
+   ],
+   "ratio": 0.7067
+  },
+  {
+   "block": "2aaf7852-775b-81f7-8482-e1b09c10c72e",
+   "kind": "pdf",
+   "file": "reelationships/reelationships-product-brief.pdf",
+   "bytes": 4040993,
+   "name": "Reelationships_Product_Brief.pdf",
+   "pages": [
+    "reelationships/reelationships-product-brief/p-01.jpg",
+    "reelationships/reelationships-product-brief/p-02.jpg",
+    "reelationships/reelationships-product-brief/p-03.jpg",
+    "reelationships/reelationships-product-brief/p-04.jpg",
+    "reelationships/reelationships-product-brief/p-05.jpg",
+    "reelationships/reelationships-product-brief/p-06.jpg",
+    "reelationships/reelationships-product-brief/p-07.jpg",
+    "reelationships/reelationships-product-brief/p-08.jpg",
+    "reelationships/reelationships-product-brief/p-09.jpg",
+    "reelationships/reelationships-product-brief/p-10.jpg",
+    "reelationships/reelationships-product-brief/p-11.jpg",
+    "reelationships/reelationships-product-brief/p-12.jpg",
+    "reelationships/reelationships-product-brief/p-13.jpg",
+    "reelationships/reelationships-product-brief/p-14.jpg",
+    "reelationships/reelationships-product-brief/p-15.jpg"
+   ],
+   "ratio": 1.7778
+  }
+ ],
+ "spotify-remixed": [
+  {
+   "block": "2abf7852-775b-80d5-b2ef-d8d36d6d1f92",
+   "kind": "pdf",
+   "file": "spotify-remixed/blitz-spotifyai.pdf",
+   "bytes": 3816177,
+   "name": "Blitz_spotifyAI.pdf",
+   "pages": [
+    "spotify-remixed/blitz-spotifyai/p-1.jpg",
+    "spotify-remixed/blitz-spotifyai/p-2.jpg",
+    "spotify-remixed/blitz-spotifyai/p-3.jpg",
+    "spotify-remixed/blitz-spotifyai/p-4.jpg",
+    "spotify-remixed/blitz-spotifyai/p-5.jpg",
+    "spotify-remixed/blitz-spotifyai/p-6.jpg",
+    "spotify-remixed/blitz-spotifyai/p-7.jpg"
+   ],
+   "ratio": 1.7778
+  }
+ ],
+ "tathya-dpi": [
+  {
+   "block": "2abf7852-775b-8074-9078-c5122e6813a8",
+   "kind": "pdf",
+   "file": "tathya-dpi/tathya.pdf",
+   "bytes": 927795,
+   "name": "Tathya.pdf",
+   "pages": [
+    "tathya-dpi/tathya/p-01.jpg",
+    "tathya-dpi/tathya/p-02.jpg",
+    "tathya-dpi/tathya/p-03.jpg",
+    "tathya-dpi/tathya/p-04.jpg",
+    "tathya-dpi/tathya/p-05.jpg",
+    "tathya-dpi/tathya/p-06.jpg",
+    "tathya-dpi/tathya/p-07.jpg",
+    "tathya-dpi/tathya/p-08.jpg",
+    "tathya-dpi/tathya/p-09.jpg",
+    "tathya-dpi/tathya/p-10.jpg",
+    "tathya-dpi/tathya/p-11.jpg",
+    "tathya-dpi/tathya/p-12.jpg",
+    "tathya-dpi/tathya/p-13.jpg",
+    "tathya-dpi/tathya/p-14.jpg",
+    "tathya-dpi/tathya/p-15.jpg"
+   ],
+   "ratio": 1.7778
+  }
+ ],
+ "zepto-teardown": [
+  {
+   "block": "2aaf7852-775b-81b0-af78-c2b3ef6ed736",
+   "kind": "pdf",
+   "file": "zepto-teardown/zepto-teardown.pdf",
+   "bytes": 911020,
+   "name": "ZEPTO_Teardown.pdf",
+   "pages": [
+    "zepto-teardown/zepto-teardown/p-1.jpg",
+    "zepto-teardown/zepto-teardown/p-2.jpg",
+    "zepto-teardown/zepto-teardown/p-3.jpg",
+    "zepto-teardown/zepto-teardown/p-4.jpg",
+    "zepto-teardown/zepto-teardown/p-5.jpg",
+    "zepto-teardown/zepto-teardown/p-6.jpg"
+   ],
+   "ratio": 0.7726
+  }
+ ],
+ "zerodha-teardown": [
+  {
+   "block": "2abf7852-775b-8053-9a39-e7e9f0cc0e5f",
+   "kind": "pdf",
+   "file": "zerodha-teardown/zerodha-teardown.pdf",
+   "bytes": 306354,
+   "name": "ZERODHA_Teardown.pdf",
+   "pages": [
+    "zerodha-teardown/zerodha-teardown/p-1.jpg",
+    "zerodha-teardown/zerodha-teardown/p-2.jpg",
+    "zerodha-teardown/zerodha-teardown/p-3.jpg",
+    "zerodha-teardown/zerodha-teardown/p-4.jpg"
+   ],
+   "ratio": 0.7726
+  }
+ ]
+}

@@ -187,7 +187,134 @@ const CHASSIS = {
   },
 };
 
+function buildBike(livery, glowHex) {
+  const g = new THREE.Group();
+  const L = 2.9, W = 0.64;
+  const M = {
+    paint: new THREE.MeshPhysicalMaterial({ color: livery.body, metalness: 0.25, roughness: 0.36, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.0 }),
+    stripe: new THREE.MeshPhysicalMaterial({ color: livery.stripe, metalness: 0.3, roughness: 0.4, clearcoat: 1, polygonOffset: true, polygonOffsetFactor: -1 }),
+    trim: new THREE.MeshStandardMaterial({ color: livery.trim, metalness: 0.75, roughness: 0.3 }),
+    glass: new THREE.MeshPhysicalMaterial({ color: '#0a0a12', metalness: 0.9, roughness: 0.03, envMapIntensity: 2.2, transparent: true, opacity: 0.85 }),
+    tire: new THREE.MeshStandardMaterial({ color: '#0b0b0e', roughness: 0.85 }),
+    suit: new THREE.MeshStandardMaterial({ color: '#141219', roughness: 0.55, metalness: 0.2 }),
+    helmet: new THREE.MeshPhysicalMaterial({ color: '#0c0c10', metalness: 0.6, roughness: 0.15, clearcoat: 1, envMapIntensity: 1.6 }),
+    tail: new THREE.MeshBasicMaterial({ color: HDR('#ff1a3c', 6) }),
+    rim: new THREE.MeshBasicMaterial({ color: HDR(glowHex || livery.stripe, glowHex ? 2.2 : 1.2) }),
+  };
+  const fairing = (s) => {
+    s.moveTo(0.2, 0.55);
+    s.quadraticCurveTo(0.0, 0.78, 0.26, 0.92);
+    s.lineTo(0.9, 0.96);
+    s.lineTo(1.25, 0.84);
+    s.quadraticCurveTo(1.7, 0.82, 2.0, 1.06);
+    s.quadraticCurveTo(2.35, 1.26, 2.6, 1.16);
+    s.quadraticCurveTo(2.86, 1.0, 2.9, 0.72);
+    s.quadraticCurveTo(2.86, 0.42, 2.5, 0.36);
+    s.lineTo(1.0, 0.33);
+    s.quadraticCurveTo(0.45, 0.36, 0.2, 0.55);
+  };
+  const body = new THREE.Mesh(profile(fairing, L, W, 0.14), M.paint);
+  g.add(body);
+  body.geometry.computeBoundingBox();
+  const RZ = body.geometry.boundingBox.max.z;
+  const stripe = new THREE.Mesh(profile(fairing, L, 0.16, 0), M.stripe);
+  stripe.scale.set(1, 1.01, 1.008);
+  g.add(stripe);
+  const screen = new THREE.Mesh(profile((s) => { s.moveTo(2.12, 1.12); s.quadraticCurveTo(2.4, 1.4, 2.62, 1.3); s.lineTo(2.72, 1.12); s.lineTo(2.12, 1.12); }, L, 0.5, 0.03), M.glass);
+  g.add(screen);
+  // disc wheels with lit rims
+  const wheelList = [];
+  const tire = new THREE.CylinderGeometry(0.34, 0.34, 0.2, 32).rotateZ(Math.PI / 2);
+  const disc = new THREE.CylinderGeometry(0.26, 0.26, 0.21, 32).rotateZ(Math.PI / 2);
+  const ring = new THREE.TorusGeometry(0.27, 0.012, 8, 40).rotateY(Math.PI / 2);
+  for (const z of [-1.02, 0.98]) {
+    const w = new THREE.Group();
+    w.add(new THREE.Mesh(tire, M.tire), new THREE.Mesh(disc, M.trim));
+    for (const sx of [-0.106, 0.106]) { const r = new THREE.Mesh(ring, M.rim); r.position.x = sx; w.add(r); }
+    const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.215, 0.04, 0.42), M.paint);
+    w.add(spoke);
+    w.position.set(0, 0.34, z);
+    g.add(w);
+    wheelList.push(w);
+  }
+  // front fork + swingarm
+  for (const sx of [-0.13, 0.13]) {
+    const fork = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.75, 10), M.trim);
+    fork.position.set(sx, 0.68, -1.12);
+    fork.rotation.x = -0.42;
+    g.add(fork);
+  }
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.9), M.trim);
+  arm.position.set(0.14, 0.4, 0.6);
+  arm.rotation.x = 0.12;
+  g.add(arm);
+  // rider: crouched, chin on the tank
+  const cap = (r, l) => new THREE.CapsuleGeometry(r, l, 6, 12);
+  const torso = new THREE.Mesh(cap(0.19, 0.42), M.suit);
+  torso.position.set(0, 1.2, 0.05);
+  torso.rotation.x = -1.05;
+  g.add(torso);
+  const back = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.02, 0.5), M.stripe);
+  back.position.set(0, 1.39, 0.12);
+  back.rotation.x = -1.05 + Math.PI / 2;
+  g.add(back);
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.17, 24, 18), M.helmet);
+  helmet.position.set(0, 1.36, -0.42);
+  helmet.scale.set(1, 0.95, 1.12);
+  g.add(helmet);
+  const visorLine = new THREE.Mesh(new THREE.TorusGeometry(0.168, 0.008, 6, 30, Math.PI), M.rim);
+  visorLine.position.copy(helmet.position);
+  visorLine.rotation.set(0, Math.PI / 2, Math.PI / 2);
+  g.add(visorLine);
+  for (const sx of [-1, 1]) {
+    const armM = new THREE.Mesh(cap(0.06, 0.42), M.suit);
+    armM.position.set(sx * 0.24, 1.14, -0.58);
+    armM.rotation.set(-1.15, 0, sx * 0.25);
+    g.add(armM);
+    const thigh = new THREE.Mesh(cap(0.085, 0.38), M.suit);
+    thigh.position.set(sx * 0.22, 0.95, 0.25);
+    thigh.rotation.x = -1.2;
+    g.add(thigh);
+    const shin = new THREE.Mesh(cap(0.07, 0.36), M.suit);
+    shin.position.set(sx * 0.24, 0.68, 0.48);
+    shin.rotation.x = 0.55;
+    g.add(shin);
+  }
+  // tail: slim blade + stacked fang
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.045, 0.04), M.tail);
+  blade.position.set(0, 0.8, RZ - 0.04);
+  g.add(blade);
+  const fang = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.04), M.tail);
+  fang.position.set(0, 0.68, RZ - 0.06);
+  g.add(fang);
+  const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.075), new THREE.MeshBasicMaterial({ map: plateTexture(), color: HDR('#ffffff', 0.9) }));
+  plate.position.set(0, 0.5, RZ - 0.12);
+  g.add(plate);
+  // upswept exhaust + flames
+  const ex = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.06, 0.6, 16), M.trim);
+  ex.rotation.x = Math.PI / 2 - 0.35;
+  ex.position.set(0.24, 0.62, RZ - 0.35);
+  g.add(ex);
+  const flameMat = new THREE.MeshBasicMaterial({ color: HDR('#4fd8ff', 3), transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+  const flame = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.45, 12, 1, true), flameMat);
+  flame.rotation.x = Math.PI / 2;
+  flame.position.set(0.24, 0.72, RZ + 0.15);
+  flame.visible = false;
+  g.add(flame);
+  let glowLight = null;
+  if (glowHex) {
+    glowLight = new THREE.PointLight(new THREE.Color(glowHex), 18, 7, 1.6);
+    glowLight.position.set(0, 0.25, 0);
+    g.add(glowLight);
+  }
+  const tailLight = new THREE.PointLight(new THREE.Color('#ff1a3c'), 1.0, 5, 2);
+  tailLight.position.set(0, 0.25, RZ + 1.6);
+  g.add(tailLight);
+  return { group: g, wheels: wheelList, flames: [flame], M, glowLight, tailLight, length: L, width: W + 0.6, wheelR: 0.34, rearZ: RZ, tailY: 0.8, tailHalfW: 0.13, bike: true };
+}
+
 export function buildPlayerCar(kind, livery, glowHex) {
+  if (kind === 'bike') return buildBike(livery, glowHex);
   const C = CHASSIS[kind] || CHASSIS.wedge;
   const g = new THREE.Group();
   const M = {

@@ -14,6 +14,12 @@ const CAR_LEN = 4.4, CAR_W = 1.95;
 const GLITCH_TIME = 3.0;
 const SHARDS_PER_FILE = 5;
 const TOTAL_FILES = 10;
+export const SECTOR = 1500;        // a junction every 1.5 km
+export const TUNNEL = 260;         // the tunnel right after each junction
+export const ROUTES = {
+  expressway: { name: 'EXPRESSWAY', traffic: 1.0, speed: 1.0, density: 1.0, shard: 1.0 },
+  backstreets: { name: 'BACKSTREETS', traffic: 1.25, speed: 0.78, density: 1.0, shard: 1.5 },
+};
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const smooth = (t) => t * t * (3 - 2 * t);
@@ -67,10 +73,19 @@ export function createSim(opts = {}) {
     return s.h0 + (s.h - s.h0) * t;
   }
 
+  function routeAt(z) {
+    const rs = S.routes || [];
+    for (let i = rs.length - 1; i >= 0; i--) if (rs[i].z0 <= z) return rs[i].route;
+    return 'expressway';
+  }
+
   // ---------- spawning ----------
   function spawnShards() {
     while (S.nextShardZ < S.z + 520) {
+      if (S.finale) return;
       const z0 = S.nextShardZ;
+      const inSector = ((z0 % SECTOR) + SECTOR) % SECTOR;
+      if (inSector > SECTOR - 120 || inSector < TUNNEL + 40) { S.nextShardZ += 60; continue; } // keep junctions & tunnels clean
       const p = rnd();
       const lane = (rnd() * 3) | 0;
       const n = 6;
@@ -101,14 +116,16 @@ export function createSim(opts = {}) {
 
   function spawnTraffic() {
     const diff = DIFFICULTY[cfg.difficulty] || DIFFICULTY.street;
-    const want = Math.round((mode === 'attract' ? 9 : 13) * diff.density);
+    if (S.finale) return;
+    const R = ROUTES[routeAt(S.z + 300)] || ROUTES.expressway;
+    const want = Math.round((mode === 'attract' ? 9 : 13) * diff.density * R.traffic);
     let guard = 0;
     while (S.cars.length < want && guard++ < 20) {
       const z = S.z + 220 + rnd() * 260 + (S.cars.length === 0 ? -140 : 0);
       const lane = (rnd() * 3) | 0;
       if (!laneFree(lane, z, 28) || wouldWall(lane, z, null)) continue;
       const kind = rnd() < 0.16 ? 'hauler' : rnd() < 0.5 ? 'sedan' : 'hatch';
-      const speed = (24 + rnd() * 18) * diff.trafficSpeed * (kind === 'hauler' ? 0.85 : 1);
+      const speed = (24 + rnd() * 18) * diff.trafficSpeed * R.speed * (kind === 'hauler' ? 0.85 : 1);
       S.cars.push({
         id: S.uid++, z, lane, target: lane, x: LANES[lane], speed, cruise: speed, kind,
         paint: (rnd() * 8) | 0, blink: 0, brake: false, prevDz: z - S.z, hit: 0, think: rnd() * 2,
@@ -130,6 +147,8 @@ export function createSim(opts = {}) {
       overclock: false, onKerb: false, scrape: 0, shake: 0, flash: 0,
       cars: [], shardList: [], nextShardZ: mode === 'play' ? 140 : 60, uid: 1,
       car, ai: { target: 0, think: 0 },
+      route: 'expressway', routes: [{ z0: -1e9, route: 'expressway' }], nextJunction: SECTOR, sector: 1,
+      finale: false, finaleT: 0, done: false,
     });
     sections = [];
     extendTrack(1200);
@@ -184,7 +203,7 @@ export function createSim(opts = {}) {
       S.lastCount = n;
       if (S.count <= 0) emit({ type: 'go' });
     }
-    const racing = S.count <= 0 && !S.over;
+    const racing = S.count <= 0 && !S.over && !S.done;
 
     if (mode === 'attract') autopilot(dt);
 
@@ -199,6 +218,7 @@ export function createSim(opts = {}) {
     const top = MAX * car.top * (overclock ? OC_TOP : 1) * (S.slip > 0 ? SLIP_TOP : 1);
     if (S.over) S.speed = Math.max(0, S.speed - 22 * dt);
     else if (!racing) S.speed = mode === 'attract' ? S.speed : 0;
+    else if (S.finale) { /* coasting handled below */ }
     else if (input.brake) S.speed = Math.max(0, S.speed - 34 * dt);
     else if (S.speed < top) S.speed += 21 * car.accel * (overclock ? 1.25 : 1) * Math.max(0.12, 1 - (S.speed / top) ** 2) * dt;
     else S.speed = Math.max(top, S.speed - 9 * dt);
@@ -253,6 +273,29 @@ export function createSim(opts = {}) {
     S.overclock = overclock;
     if (S.slip > 0) S.slip -= dt;
 
+    // ---- junctions: the lane you're in under the sign picks the next route ----
+    if (S.z >= S.nextJunction && !S.finale) {
+      const route = S.x > LANE_W * 0.5 ? 'backstreets' : 'expressway';
+      S.routes.push({ z0: S.nextJunction, route });
+      if (S.routes.length > 6) S.routes.shift();
+      S.route = route;
+      S.sector += 1;
+      S.nextJunction += SECTOR;
+      if (mode === 'play') emit({ type: 'junction', route, sector: S.sector });
+    }
+
+    // ---- finale: traffic clears, the car rolls to a stop at the lookout ----
+    if (S.finale) {
+      S.finaleT += dt;
+      input.boost = false;
+      S.cars = S.cars.filter((c) => Math.abs(c.z - S.z) > 60 || S.finaleT < 0.5);
+      if (S.finaleT > 1.2) S.speed = Math.max(0, S.speed - 14 * dt);
+      if (S.speed <= 0.5 && !S.done && S.finaleT > 2) {
+        S.done = true;
+        emit({ type: 'complete', score: Math.round(S.score), files: S.files, dist: S.dist, top: S.topSpeed, nearMisses: S.nearMisses, shards: S.shards, sectors: S.sector });
+      }
+    }
+
     // ---- traffic ----
     extendTrack(S.z + 1300);
     if (S.invuln > 0) S.invuln -= dt;
@@ -304,7 +347,8 @@ export function createSim(opts = {}) {
       // interactions with the player
       const dz = c.z - S.z;
       const dx = c.x - S.x;
-      if (racing && Math.abs(dz) < CAR_LEN && Math.abs(dx) < CAR_W) {
+      const hitW = car.bike ? 1.45 : CAR_W;
+      if (racing && Math.abs(dz) < CAR_LEN && Math.abs(dx) < hitW) {
         if (mode === 'play' && S.invuln <= 0) {
           S.lives -= 1;
           S.invuln = 1.6;
@@ -358,12 +402,13 @@ export function createSim(opts = {}) {
         S.chain += 1;
         S.shards += 1;
         const mult = (1 + Math.min(4, Math.floor(S.chain / 6))) * (overclock ? 2 : 1);
-        S.score += 100 * mult;
+        S.score += Math.round(100 * mult * (ROUTES[S.route] || ROUTES.expressway).shard);
         if (mode === 'play') {
           emit({ type: 'shard', mult, chain: S.chain, x: s.x });
           if (S.shards % SHARDS_PER_FILE === 0 && S.files < TOTAL_FILES) {
             S.files += 1;
             emit({ type: 'casefile', n: S.files });
+            if (S.files === TOTAL_FILES && !S.finale) { S.finale = true; S.finaleT = 0; emit({ type: 'finale' }); }
           }
         }
       } else if (s.z < S.z - 3) {
@@ -387,6 +432,7 @@ export function createSim(opts = {}) {
     reset,
     curveAt,
     hillAt,
+    routeAt,
     get mode() { return mode; },
     setMode(m) { mode = m; },
     configure(c) {

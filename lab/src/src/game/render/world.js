@@ -4,8 +4,8 @@ import { U, std, basic, buildingMaterial, glowMaterial, decalMaterial, skyMateri
 import { roadTextures, kerbTexture, gridTexture, billboardTexture, neonEnvironment } from './textures.js';
 import { buildPlayerCar, createTrafficKit } from './cars.js';
 import { TIMES, WEATHER, LIVERIES, GLOWS, SLOGANS } from '../config.js';
-import { LANES, MAX, mulberry } from '../sim.js';
-import { createPlayerTrails, createTrafficTrails, createSearchlights, signTextures, createViaduct } from './megacity.js';
+import { LANES, MAX, mulberry, SECTOR, TUNNEL } from '../sim.js';
+import { createPlayerTrails, createTrafficTrails, createSearchlights, signTextures, createViaduct, createTower, createTunnel, createCityCarpet } from './megacity.js';
 
 const ROAD_LEN = 760;     // visible road strip (m)
 const NEAR = 14;          // strip starts this far behind the player
@@ -209,17 +209,20 @@ export function createWorld(renderer, initialCfg) {
   scene.add(cityGroup);
   const B = [];
   const tmpM = new THREE.Matrix4();
+  let routeAt = () => 'expressway';
   function rollBuilding(b, z) {
     const row = b.row;
     b.z = z;
+    const back = routeAt(z) === 'backstreets';
     b.w = row === 0 ? 10 + rnd() * 14 : 16 + rnd() * 28;
     b.d = 10 + rnd() * 16;
     b.h = row === 0 ? 8 + Math.pow(rnd(), 1.8) * 50 : 30 + Math.pow(rnd(), 1.3) * 160;
-    b.x = b.side * (row === 0 ? 16 + rnd() * 10 + b.w / 2 : 38 + rnd() * 45 + b.w / 2);
+    b.x = b.side * (row === 0 ? (back ? 9.6 + rnd() * 1.5 : 16 + rnd() * 10) + b.w / 2 : (back ? 28 : 38) + rnd() * 45 + b.w / 2);
+    if (back && row === 0) b.h = 14 + Math.pow(rnd(), 1.4) * 60; // backstreets: a canyon of signs
     // gaps in the street wall: some lots are empty plazas
-    if (row === 0 && rnd() < 0.22) b.h = 0.01;
+    if (row === 0 && rnd() < (back ? 0.05 : 0.22)) b.h = 0.01;
     b.seed = rnd();
-    b.sign = row === 0 && b.h > 6 && rnd() < 0.7;
+    b.sign = row === 0 && b.h > 6 && rnd() < (back ? 0.97 : 0.7);
     b.signH = 4 + rnd() * 8;
     b.signY = 4 + rnd() * Math.max(1, b.h - b.signH - 6);
     b.signC = (rnd() * signTex.length) | 0;
@@ -280,7 +283,7 @@ export function createWorld(renderer, initialCfg) {
   }
   boards.forEach((b, i) => rollBoard(b, 120 + i * (SPAN / 6)));
 
-  const gantryTex = [billboardTexture('RING ROAD  ▸  SECTOR 07', '#fcee0a'), billboardTexture('NIGHT COURIER LANE  ▸', '#00f0ff')];
+  const gantryTex = [billboardTexture('◀ EXPRESSWAY   BACKSTREETS ▶', '#fcee0a', '高速 ・ 路地 // THE LANE YOU HOLD PICKS THE ROUTE'), billboardTexture('RING ROAD · KEEP LEFT FOR THE EXPRESSWAY', '#00f0ff')];
   const gantries = [];
   for (let i = 0; i < 2; i++) {
     const g = new THREE.Group();
@@ -306,7 +309,7 @@ export function createWorld(renderer, initialCfg) {
     tube.position.set(0, 8.4, 0.38);
     g.add(tube);
     scene.add(g);
-    gantries.push({ g, z: 300 + i * 420 });
+    gantries.push({ g, z: i === 0 ? SECTOR : SECTOR - 700 });
   }
 
   // ---------------------------------------------------------------- shards
@@ -347,7 +350,8 @@ export function createWorld(renderer, initialCfg) {
     const liv = LIVERIES[cfg.livery] || LIVERIES[0];
     const glow = (GLOWS[cfg.glow] || GLOWS[0]).color;
     player = buildPlayerCar(cfg.car, liv, glow);
-    glowPlane.scale.set(player.width + 2.4, 1, player.length + 2.6);
+    glowPlane.scale.set(player.bike ? 2.2 : player.width + 2.4, 1, player.length + (player.bike ? 1.6 : 2.6));
+    glowPlane.rotation.set(0, 0, 0);
     glowPlane.material.uniforms.uColor.value.set(glow || '#000000');
     glowPlane.visible = !!glow;
     player.group.add(glowPlane);
@@ -418,6 +422,10 @@ export function createWorld(renderer, initialCfg) {
   const tTrails = createTrafficTrails(scene, 64);
   const searchlights = createSearchlights(far);
   const viaduct = createViaduct(scene, ROAD_LEN, NEAR);
+  const tower = createTower(far);
+  createCityCarpet(far);
+  const tunnel = createTunnel(scene, TUNNEL);
+  let lastReroute = -1;
 
   // ---------------------------------------------------------------- config
   function applyConfig(next) {
@@ -533,9 +541,25 @@ export function createWorld(renderer, initialCfg) {
       if (b.z < S.z - 30) rollBoard(b, b.z + SPAN + rnd() * 80);
       b.g.position.set(b.x, 0, -(b.z - S.z));
     }
-    for (const g of gantries) {
-      if (g.z < S.z - 30) g.z += 840;
-      g.g.position.set(0, 0, -(g.z - S.z));
+    routeAt = sim.routeAt;
+    gantries[0].z = S.nextJunction;
+    gantries[1].z = S.nextJunction - 700 > S.z - 30 ? S.nextJunction - 700 : S.nextJunction + SECTOR - 700;
+    for (const g of gantries) g.g.position.set(0, 0, -(g.z - S.z));
+    // the tunnel sits right after the most recent junction (or the upcoming one)
+    const lastJ = S.nextJunction - SECTOR;
+    const tunZ = S.z < lastJ + TUNNEL + 40 && lastJ > 0 ? lastJ : S.nextJunction;
+    tunnel.position.set(0, 0, -(tunZ - S.z));
+    tunnel.visible = !S.finale;
+    // inside the tunnel, rebuild the city ahead for the route just chosen (hidden by the walls)
+    if (lastJ > 0 && S.z > lastJ + 25 && S.z < lastJ + TUNNEL && lastReroute !== lastJ) {
+      lastReroute = lastJ;
+      for (let i = 0; i < B_COUNT; i++) if (B[i].z > lastJ + TUNNEL - 10) { rollBuilding(B[i], B[i].z); writeBuilding(i); }
+      for (const b of B) if (b.z > S.z - 40 && b.z < lastJ + TUNNEL - 10) b.h = Math.min(b.h, 0.01);
+      for (let i = 0; i < B_COUNT; i++) writeBuilding(i);
+      buildings.instanceMatrix.needsUpdate = true;
+      for (const sm of signMeshes) sm.instanceMatrix.needsUpdate = true;
+      bGeo.attributes.aSeed.needsUpdate = true;
+      viaduct.setVisible(sim.routeAt(S.z + 300) === 'expressway');
     }
 
     // shards
@@ -612,12 +636,17 @@ export function createWorld(renderer, initialCfg) {
     const P = player;
     const pg = P.group;
     pg.position.set(S.x, 0, 0);
-    pg.rotation.set(-Math.min(0.03, Math.max(-0.03, (S.speed - (P.lastSpeed || 0)) * 0.01)), -S.vx * 0.032 - S.steer * 0.04, S.vx * 0.012);
+    const pitch = -Math.min(0.03, Math.max(-0.03, (S.speed - (P.lastSpeed || 0)) * 0.01));
+    if (P.bike) {
+      pg.rotation.set(pitch, -S.vx * 0.02, -S.steer * 0.42 - S.vx * 0.035);
+      glowPlane.rotation.z = -pg.rotation.z; // keep the pool flat on the road while the bike leans
+    }
+    else pg.rotation.set(pitch, -S.vx * 0.032 - S.steer * 0.04, S.vx * 0.012);
     P.lastSpeed = S.speed;
     const spin = (S.speed * dt) / P.wheelR;
     P.wheels.forEach((w, i) => {
       w.rotation.x -= spin;
-      if (i < 2) w.rotation.y = -S.steer * 0.32;
+      if (P.bike ? i === 0 : i < 2) w.rotation.y = -S.steer * (P.bike ? 0.12 : 0.32);
     });
     for (const f of P.flames) {
       f.visible = S.overclock || S.slip > 0;
@@ -663,21 +692,35 @@ export function createWorld(renderer, initialCfg) {
       camRoll = 0;
       return;
     }
+    if (S.finale && S.finaleT > 1.2) {
+      // the lookout: rise above the road and turn to the tower
+      const k = Math.min(1, (S.finaleT - 1.2) / 6);
+      const e = k * k * (3 - 2 * k);
+      const tw = tower.getWorldPosition(v3);
+      fov += (50 - fov) * Math.min(1, dt * 1.5);
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+      camera.position.set(S.x * (1 - e), 2.1 + e * 165, 6.2 + e * 60);
+      const lookAt = new THREE.Vector3(S.x * 0.9, 0.95, -16).lerp(tw.clone().setY(tw.y + 150), e);
+      camera.lookAt(lookAt);
+      camPos.copy(camera.position);
+      return;
+    }
     // camera: chase, FOV breathes with speed, roll into the drift, shake on impact
     const targetFov = 58 + sp * 13 + (S.overclock ? 5 : 0) + (S.slip > 0 ? 4 : 0);
     fov += (targetFov - fov) * Math.min(1, dt * 3);
     camera.fov = fov;
     camera.updateProjectionMatrix();
     camPos.x += (S.x * 0.84 - camPos.x) * Math.min(1, dt * 5);
-    camPos.y = 2.05 + sp * 0.12;
-    camPos.z = 6.2 - sp * 0.5;
+    camPos.y = (P.bike ? 1.55 : 2.05) + sp * 0.12;
+    camPos.z = (P.bike ? 4.4 : 6.2) - sp * 0.5;
     camera.position.copy(camPos);
     if (fx.full && S.shake > 0) {
       const k = S.shake * 0.5;
       camera.position.x += (Math.random() - 0.5) * k;
       camera.position.y += (Math.random() - 0.5) * k;
     }
-    look.set(S.x * 0.92, 0.95, -16);
+    look.set(S.x * 0.92, P.bike ? 0.85 : 0.95, -16);
     look.x += U.uCurve.value * 16 * 16 * 0.6;
     look.y += U.uHill.value * 16 * 16;
     camera.lookAt(look);

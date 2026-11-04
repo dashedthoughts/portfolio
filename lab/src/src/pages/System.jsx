@@ -70,8 +70,8 @@ export default function System() {
         <GlitchText as="h1" text="THE SYSTEM" className="project__title" />
         <p className="lede">
           Tokens, components and the rules behind them. Values below are read live from the CSS, so toggle MOOD in the
-          nav and watch the roles swap. Source: <code>lab/src/src/styles/tokens.css</code> · rationale:{' '}
-          <code>lab/DESIGN.md</code>.
+          nav and watch the roles swap. Source: <code>src/src/styles/tokens.css</code> · rationale:{' '}
+          <code>DESIGN.md</code>.
         </p>
       </section>
 

@@ -10,7 +10,7 @@ import PhotoStrip from '../components/PhotoStrip.jsx';
 import useReveal from '../lib/useReveal.js';
 import { getDecrypted } from '../lib/store.js';
 import {
-  projects, categories, stats, tickerA, tickerB, memes, EMAIL, REDDIT, LINKEDIN, NOTION_HOME,
+  projects, categories, stats, tickerA, tickerB, memes, EMAIL, REDDIT, LINKEDIN, CLASSIC,
 } from '../data/content.js';
 
 export default function Home() {
@@ -195,7 +195,6 @@ export default function Home() {
           </a>
           <div className="terminal__links">
             <a href={LINKEDIN} target="_blank" rel="noreferrer">LinkedIn ↗</a>
-            <a href={NOTION_HOME} target="_blank" rel="noreferrer">Notion Portfolio ↗</a>
             <a href={REDDIT} target="_blank" rel="noreferrer">Reddit ↗</a>
             <Link to="/system">Design system ›</Link>
           </div>
@@ -205,7 +204,7 @@ export default function Home() {
           <br />
           the mending of them, and the learning they leave behind?&rdquo; <span>~ GS</span>
         </p>
-        <p className="footer__build">NIGHT CITY v2 // DESIGN LAB BUILD · <a href="./baseline/">compare with v8 baseline</a></p>
+        <p className="footer__build">HOME · THE NIGHT BUILD · <a href={CLASSIC}>the classic site</a></p>
       </footer>
     </main>
   );

@@ -1,0 +1,100 @@
+/* =========================================================
+   NIGHT CITY v2 · design tokens
+   Rule: components read ROLE tokens only (--signal, --data…),
+   never raw palette tokens. Moods swap roles, not components.
+   See lab/DESIGN.md for the why.
+   ========================================================= */
+
+@font-face {
+  font-family: 'NEMESYS';
+  src: url('https://fonts.cdnfonts.com/s/125590/NEMESYS-Regular.woff') format('woff');
+  font-display: swap;
+}
+
+:root {
+  /* ---- palette (raw) ---- */
+  --c-void: #0d0d0d;
+  --c-panel: #14121c;
+  --c-raised: #1c1a2a;
+  --c-night: #2a1b4d;
+  --c-ink: #f5f2ea;
+  --c-ink-muted: #a29fb8;
+  --c-ink-dim: #8a8799;
+  --c-yellow: #fcee0a;
+  --c-cyan: #00f0ff;
+  --c-red: #ff003c;
+  --c-red-text: #ff4d6d;
+  --c-magenta: #ff2bd6;
+  --c-acid: #b8ff2e;
+
+  /* ---- roles (what components use) ---- */
+  --bg: var(--c-void);
+  --bg-panel: var(--c-panel);
+  --bg-raised: var(--c-raised);
+  --ink: var(--c-ink);
+  --ink-muted: var(--c-ink-muted);
+  --ink-dim: var(--c-ink-dim);
+  --signal: var(--c-yellow);     /* the ONE loud colour per view: CTAs, focus, H1 accent */
+  --on-signal: var(--c-void);
+  --data: var(--c-cyan);         /* links, HUD lines, info */
+  --alert: var(--c-red);         /* hard shadows, glitch slices, hits · never small text */
+  --alert-text: var(--c-red-text);
+  --hype: var(--c-magenta);      /* secondary accent */
+  --success: var(--c-acid);      /* pickups, "online", decrypted */
+  --fill-deep: var(--c-night);
+
+  /* ---- type ---- */
+  --f-name: 'NEMESYS', 'Rajdhani', sans-serif;
+  --f-display: 'Rajdhani', 'Chakra Petch', sans-serif;
+  --f-body: 'Chakra Petch', system-ui, sans-serif;
+  --f-mono: 'Share Tech Mono', ui-monospace, monospace;
+  --fs-hero: clamp(3rem, 9vw, 7.5rem);
+  --fs-h1: clamp(2.25rem, 5vw, 3.75rem);
+  --fs-h2: clamp(1.75rem, 3.2vw, 2.5rem);
+  --fs-h3: 1.5rem;
+  --fs-body: 1.0625rem;
+  --fs-small: 0.875rem;
+  --fs-hud: 0.75rem;
+  --lh-body: 1.6;
+  --track-hud: 0.12em;
+
+  /* ---- space (4px base) ---- */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+  --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px; --sp-10: 128px;
+  --container: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+
+  /* ---- edges ---- */
+  --bw: 3px;
+  --bw-thin: 1px;
+  --cut-sm: 8px;
+  --cut: 14px;
+  --cut-lg: 28px;
+  --shadow-hard: 8px 8px 0 var(--alert);
+  --shadow-data: 6px 6px 0 var(--data);
+
+  /* ---- motion ---- */
+  --t-instant: 80ms;
+  --t-snap: 160ms;
+  --t-move: 280ms;
+  --t-scene: 520ms;
+  --ease-snap: cubic-bezier(.2, .9, .1, 1);
+  --ease-impact: cubic-bezier(.7, 0, .2, 1.4);
+
+  /* ---- texture ---- */
+  --scanlines: repeating-linear-gradient(to bottom, rgba(255,255,255,.035) 0 1px, transparent 1px 3px);
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  color-scheme: dark;
+}
+
+/* ---- mood: anime · swap roles only ---- */
+:root[data-mood='anime'] {
+  --signal: var(--c-magenta);
+  --on-signal: var(--c-void);
+  --hype: var(--c-acid);
+  --success: var(--c-yellow);
+  --bg-panel: #171028;
+  --bg-raised: #221838;
+  --shadow-hard: 8px 8px 0 var(--c-cyan);
+}

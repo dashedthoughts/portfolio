@@ -39,6 +39,12 @@ The deployed artifact is a SINGLE `index.html` with JS+CSS inlined:
 - Memes: ONLY from u/dashedthoughts. Stats: only CV-verified numbers. Contact: anur.dash@gmail.com.
 - Trademarks: official brand marks only via `cdn.simpleicons.org`, unmodified, referential. The F1 car is an ORIGINAL comic drawing (generic livery, no official logos) — keep it that way.
 
+## Lab (design iterations)
+- `lab/` holds **Night City v2**, the design-iteration copy, with readable source in `lab/src/` (React + Three.js). Build: `cd lab/src && npm install && npm run build` (writes `lab/index.html`); test: `npm test`.
+- `lab/baseline/` is a frozen copy of live v8 for side-by-side comparison. Don't edit it.
+- Design rationale and principles: `lab/DESIGN.md`. REDLINE (the game) architecture: `lab/README.md`.
+- Game art direction is *inspired by* 80s cel-anime megacities; never add assets, logos, vehicles or characters from any film or game.
+
 ## Backlog
 - Embed Notion case-study content into project detail pages (best path: owner exports Notion → HTML/MD zip → rebuild pages self-contained).
 - Minimalist "twin" version of the site (program.studio / studiofreight energy) for A/B.

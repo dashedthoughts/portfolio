@@ -51,7 +51,8 @@ export default function Nav() {
         <a href={LINKEDIN} target="_blank" rel="noreferrer" className="nav__ext">
           LINKEDIN
         </a>
-        <button
+      </div>
+      <button
           type="button"
           className="nav__mood"
           onClick={toggleMood}
@@ -60,7 +61,6 @@ export default function Nav() {
         >
           MOOD: {mood.toUpperCase()}
         </button>
-      </div>
     </nav>
   );
 }

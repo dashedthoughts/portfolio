@@ -1,46 +1,39 @@
-// Builds lab/index.html: ONE self-contained file (CSS + JS inlined), same deploy model as the live site.
-//   npm run build          → ../index.html
-//   npm run dev            → rebuild on change (open ../index.html via any static server)
-import { build, context } from 'esbuild';
-import { readFileSync, writeFileSync } from 'node:fs';
+// Builds the site: index.html (CSS inlined) + assets/app-*.js, with the 3D game split into its own chunk
+// so phones paint the page before downloading the engine.
+//   npm run build   → ../index.html + ../assets/
+import { build } from 'esbuild';
+import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, basename } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const OUT = join(here, '..', 'index.html');
-const CSS = ['src/styles/tokens.css', 'src/styles/site.css', 'src/styles/play.css'];
+const ROOT = join(here, '..');
+const OUT = join(ROOT, 'assets');
+const CSS = ['src/styles/tokens.css', 'src/styles/site.css', 'src/styles/play.css', 'src/styles/comic.css'];
 
-const opts = {
-  entryPoints: [join(here, 'src/main.jsx')],
+rmSync(OUT, { recursive: true, force: true });
+mkdirSync(OUT, { recursive: true });
+const result = await build({
+  entryPoints: { app: join(here, 'src/main.jsx') },
   bundle: true,
-  format: 'iife',
+  splitting: true,
+  format: 'esm',
+  outdir: OUT,
+  entryNames: '[name]-[hash]',
+  chunkNames: 'chunk-[hash]',
   minify: true,
   jsx: 'automatic', // REQUIRED: classic transform → "React is not defined"
   define: { 'process.env.NODE_ENV': '"production"' },
-  write: false,
   target: ['es2020'],
   legalComments: 'none',
+  metafile: true,
   logLevel: 'warning',
-};
-
-function emit(result) {
-  const js = result.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
-  const css = CSS.map((f) => readFileSync(join(here, f), 'utf8')).join('\n');
-  const tpl = readFileSync(join(here, 'template.html'), 'utf8');
-  if (!tpl.includes('/*__CSS__*/') || !tpl.includes('/*__JS__*/')) throw new Error('template placeholders missing');
-  // split/join instead of replace(): replacement strings would interpret `$&` etc. inside the bundle
-  const html = tpl.split('/*__CSS__*/').join(css).split('/*__JS__*/').join(js);
-  writeFileSync(OUT, html);
-  console.log(`built ${OUT} — ${(html.length / 1024).toFixed(1)} KB`);
-}
-
-if (process.argv.includes('--watch')) {
-  const ctx = await context({
-    ...opts,
-    plugins: [{ name: 'emit', setup: (b) => b.onEnd((r) => r.errors.length || emit(r)) }],
-  });
-  await ctx.watch();
-  console.log('watching…');
-} else {
-  emit(await build(opts));
-}
+});
+const entry = Object.keys(result.metafile.outputs).find((f) => basename(f).startsWith('app-') && f.endsWith('.js'));
+const css = CSS.map((f) => readFileSync(join(here, f), 'utf8')).join('\n');
+const tpl = readFileSync(join(here, 'template.html'), 'utf8');
+if (!tpl.includes('/*__CSS__*/') || !tpl.includes('__ENTRY__')) throw new Error('template placeholders missing');
+const html = tpl.split('/*__CSS__*/').join(css).split('__ENTRY__').join('./assets/' + basename(entry));
+writeFileSync(join(ROOT, 'index.html'), html);
+for (const [f, o] of Object.entries(result.metafile.outputs)) console.log(`${basename(f).padEnd(28)} ${(o.bytes / 1024).toFixed(0).padStart(5)} KB`);
+console.log(`index.html ${(html.length / 1024).toFixed(0)} KB (CSS inlined)`);

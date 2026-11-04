@@ -5,6 +5,7 @@ import GlitchText from '../components/GlitchText.jsx';
 import useReveal from '../lib/useReveal.js';
 import { projects, caseStudies, ROOT } from '../data/content.js';
 import { getDecrypted } from '../lib/store.js';
+import { Burst, ActionLines, Caption } from '../components/Comic.jsx';
 
 const PREVIEW = 6; // long decks open collapsed
 
@@ -97,11 +98,12 @@ export default function Project() {
     <main className="project" key={slug}>
       <Nav />
       <Link className="project__back" to="/#work">← ALL CASE FILES</Link>
-      <header className="project__head">
-        <p className="hud-label">
-          FILE {String(idx + 1).padStart(2, '0')} · {p.category.toUpperCase()} · {decrypted ? '● DECRYPTED IN REDLINE' : '○ SEALED, STILL READABLE'}
-        </p>
-        <GlitchText as="h1" text={p.title.toUpperCase()} className="project__title" />
+      <header className="project__head panel-hero">
+        <ActionLines />
+        <Burst label={`${p.sticker}!`} />
+        <Caption>FILE {String(idx + 1).padStart(2, '0')} · {p.category}</Caption>
+        <p className="hud-label">{decrypted ? '● DECRYPTED IN REDLINE' : '○ SEALED, STILL READABLE'}</p>
+        <h1 className="project__title plates" key={slug}>{p.title.toUpperCase()}</h1>
         <p className="project__tagline">{p.tagline}</p>
         {p.collaborators.length > 0 && <p className="project__collab">Built with {p.collaborators.join(', ')}</p>}
         <span className="tags">

@@ -152,10 +152,14 @@ h1, h2, h3 { font-family: var(--f-display); font-weight: 700; letter-spacing: 0.
 }
 .nav__mood:hover { background: var(--hype); color: var(--bg); }
 @media (max-width: 860px) {
-  .nav { flex-wrap: wrap; padding-block: var(--sp-2); }
+  .nav { flex-wrap: wrap; padding-block: var(--sp-2); row-gap: 2px; }
   .nav__id { display: none; }
-  .nav__links { width: 100%; gap: var(--sp-4); order: 2; }
+  .nav__links { width: 100%; gap: var(--sp-4); order: 3; }
+  .nav__links a { font-size: 0.78rem; }
   .nav__brand { order: 1; }
+  .nav__badge { width: 34px; height: 34px; font-size: 0.95rem; }
+  .nav__ext { display: none; }
+  .nav__mood { order: 2; margin-left: auto; padding: 6px 8px; font-size: 0.62rem; }
 }
 
 /* ---------- hero ---------- */
@@ -486,3 +490,11 @@ h1, h2, h3 { font-family: var(--f-display); font-weight: 700; letter-spacing: 0.
   .caret { animation: none; }
   .glitch::before, .glitch::after { display: none; }
 }
+
+/* ---------- game canvas shell: still frame first, live render fades in ---------- */
+.game-canvas { overflow: hidden; background: #07050c; }
+.game-canvas canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 600ms var(--ease-snap); }
+.game-canvas--live canvas { opacity: 1; }
+.game-poster { position: absolute; inset: 0; background: #07050c url('./poster.jpg') center 62% / cover no-repeat; }
+.game-canvas--live .game-poster { opacity: 0; transition: opacity 600ms 200ms; }
+.game-note { position: absolute; left: 50%; bottom: 12%; transform: translateX(-50%); font: 400 var(--fs-hud) / 1.4 var(--f-mono); letter-spacing: var(--track-hud); color: var(--ink-muted); background: rgba(7,5,12,.7); padding: 6px 10px; text-align: center; }

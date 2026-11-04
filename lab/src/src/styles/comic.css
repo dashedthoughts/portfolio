@@ -1,0 +1,67 @@
+/* =========================================================
+   Mixed media: ink, halftone, print plates, bursts. Stepped "on twos".
+   ========================================================= */
+.halftone { background-image: radial-gradient(circle, var(--dot, rgba(255,255,255,.14)) 1.1px, transparent 1.6px); background-size: 7px 7px; }
+
+/* the case-file header becomes a comic panel */
+.panel-hero { position: relative; isolation: isolate; padding: var(--sp-7) var(--sp-6) var(--sp-6); margin: var(--sp-4) 0 var(--sp-6); }
+.panel-hero::before { content: ''; position: absolute; inset: 0; z-index: -2; background: var(--bg-panel); border: 3px solid var(--ink); filter: url(#ink); }
+.panel-hero::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--signal) 45%, transparent) 1.2px, transparent 1.7px);
+  background-size: 8px 8px; -webkit-mask-image: linear-gradient(135deg, transparent 45%, #000 100%); mask-image: linear-gradient(135deg, transparent 45%, #000 100%); }
+.panel-hero .action-lines { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; stroke: color-mix(in srgb, var(--ink) 18%, transparent); animation: twos 0.5s steps(1) infinite; }
+@keyframes twos { 0% { transform: scale(1) rotate(0deg); } 25% { transform: scale(1.01) rotate(0.4deg); } 50% { transform: scale(0.995) rotate(-0.3deg); } 75% { transform: scale(1.005) rotate(0.2deg); } }
+.panel-hero .burst { position: absolute; right: clamp(8px, 3vw, 28px); top: calc(var(--sp-5) * -1); }
+
+/* misregistered print plates: titles land out of register, then snap in (steps, not tweens) */
+.plates { text-shadow: 3px 0 0 color-mix(in srgb, var(--data) 85%, transparent), -3px 0 0 color-mix(in srgb, var(--hype) 85%, transparent); animation: register 0.5s steps(3, end) 0.15s both; }
+@keyframes register {
+  0% { text-shadow: 9px 3px 0 var(--data), -9px -2px 0 var(--hype); transform: translate(-6px, 2px); }
+  100% { text-shadow: 2px 0 0 color-mix(in srgb, var(--data) 70%, transparent), -2px 0 0 color-mix(in srgb, var(--hype) 70%, transparent); transform: none; }
+}
+
+/* starburst sticker */
+.burst { position: relative; display: inline-grid; place-items: center; width: var(--size); height: var(--size); transform: rotate(var(--tilt)); animation: wobble 0.5s steps(1) infinite; z-index: 2; }
+.burst svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.burst__shadow { fill: var(--alert); }
+.burst__fill { fill: var(--signal); stroke: #0d0d0d; stroke-width: 2.4; stroke-linejoin: round; filter: url(#ink-fine); }
+.burst__dots { fill: url(#none); fill: transparent; }
+.burst b { position: relative; font: 400 calc(var(--size) * 0.78 / var(--len)) / 0.95 var(--f-name); color: #0d0d0d; text-align: center; max-width: 72%; letter-spacing: 0.02em; }
+@keyframes wobble { 0%, 100% { transform: rotate(var(--tilt)) scale(1); } 50% { transform: rotate(calc(var(--tilt) + 2deg)) scale(1.03); } }
+
+/* caption box */
+.caption { display: inline-block; justify-self: start; width: max-content; max-width: calc(100% - 110px); padding: 6px 12px 5px; background: var(--signal); color: #0d0d0d; font: 700 0.78rem / 1.2 var(--f-display); letter-spacing: 0.12em; text-transform: uppercase; border: 2px solid #0d0d0d; box-shadow: 4px 4px 0 #0d0d0d; transform: rotate(-1.2deg); }
+
+/* deck pages arrive like panels: dropped in, out of register, snapping home on twos */
+.deck__page { animation: panel-drop 0.42s steps(3, end) both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
+@keyframes panel-drop {
+  0% { transform: translateY(26px) rotate(-1.2deg); filter: drop-shadow(10px 0 0 var(--data)) drop-shadow(-10px 0 0 var(--hype)); }
+  100% { transform: none; filter: drop-shadow(0 0 0 transparent); }
+}
+.deck__page::after { content: ''; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle, rgba(13,13,13,.18) 1px, transparent 1.5px); background-size: 6px 6px; opacity: 0; transition: opacity var(--t-move); }
+.deck__page:hover::after { opacity: 1; }
+
+/* section headings: an inked underline drawn on reveal */
+.hud-head { position: relative; }
+.ink-rule { position: absolute; left: 0; bottom: -10px; width: min(420px, 70%); height: 14px; overflow: visible; pointer-events: none; }
+.ink-rule path { fill: none; stroke: var(--signal); stroke-width: 3.5; stroke-linecap: round; filter: url(#ink-fine); stroke-dasharray: 460; stroke-dashoffset: 460; }
+.reveal.in .ink-rule path, .hud-head.in .ink-rule path { animation: draw 0.6s steps(6, end) 0.1s forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* case cards: a dimension-slip on hover (split plates + halftone sweep) */
+.case:hover .case__title, .case:focus-visible .case__title { animation: slip 0.33s steps(2, end) 1; }
+@keyframes slip { 0% { text-shadow: 6px 0 var(--data), -6px 0 var(--hype); transform: translateX(3px); } 100% { text-shadow: none; transform: none; } }
+.case__frame::after { content: ''; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle, color-mix(in srgb, var(--signal) 40%, transparent) 1px, transparent 1.6px); background-size: 7px 7px; -webkit-mask-image: linear-gradient(120deg, transparent 55%, #000 100%); mask-image: linear-gradient(120deg, transparent 55%, #000 100%); opacity: 0; transition: opacity var(--t-snap); }
+.case:hover .case__frame::after, .case:focus-visible .case__frame::after { opacity: 1; }
+
+@media (max-width: 600px) {
+  .panel-hero { padding: var(--sp-6) var(--sp-4) var(--sp-5); }
+  .panel-hero .burst { --size: 96px !important; top: -18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel-hero .action-lines, .burst, .plates, .deck__page { animation: none !important; }
+  .ink-rule path { stroke-dashoffset: 0; animation: none !important; }
+}
+
+.deck__pdf { justify-self: start; }
+.deck__head b + .deck__pdf { justify-self: end; }
